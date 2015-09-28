@@ -3,7 +3,6 @@ package com.zhy.skinchangenow.attr;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.zhy.skinchangenow.utils.L;
 import com.zhy.skinchangenow.constant.SkinConfig;
 
 import java.util.ArrayList;
@@ -23,44 +22,33 @@ public class SkinAttrSupport
             String attrName = attrs.getAttributeName(i);
             String attrValue = attrs.getAttributeValue(i);
 
+            SkinAttrType attrType = getSupprotAttrType(attrName);
+            if (attrType == null) continue;
 
-            if (attrName.equals(SkinConfig.ATTR_BACKGROUND))
+            if (attrValue.startsWith("@"))
             {
-                if (attrValue.startsWith("@"))
+                int id = Integer.parseInt(attrValue.substring(1));
+                String entryName = context.getResources().getResourceEntryName(id);
+
+                if (entryName.startsWith(SkinConfig.ATTR_PREFIX))
                 {
-                    int id = Integer.parseInt(attrValue.substring(1));
-                    String entryName = context.getResources().getResourceEntryName(id);
-                    String typeName = context.getResources().getResourceTypeName(id);
-
-                    if(entryName.startsWith("skin"))
-                    {
-                        L.e(entryName + " , " + typeName);
-                        skinAttr = new BackgroundAttr(entryName, typeName);
-                        skinAttrs.add(skinAttr);
-                    }
-
-
-                }
-            } else if (attrName.equals(SkinConfig.ATTR_TEXTCOLOR))
-            {
-                if (attrValue.startsWith("@"))
-                {
-                    int id = Integer.parseInt(attrValue.substring(1));
-                    String entryName = context.getResources().getResourceEntryName(id);
-                    String typeName = context.getResources().getResourceTypeName(id);
-
-                    if(entryName.startsWith("skin"))
-                    {
-                        L.e(entryName+" , " + typeName);
-                        skinAttr = new TextColorAttr(entryName, typeName);
-                        skinAttrs.add(skinAttr);
-                    }
-
+                    skinAttr = new SkinAttr(attrType, entryName);
+                    skinAttrs.add(skinAttr);
                 }
             }
         }
         return skinAttrs;
 
+    }
+
+    private static SkinAttrType getSupprotAttrType(String attrName)
+    {
+        for (SkinAttrType attrType : SkinAttrType.values())
+        {
+            if (attrType.getAttrType().equals(attrName))
+                return attrType;
+        }
+        return null;
     }
 
 }

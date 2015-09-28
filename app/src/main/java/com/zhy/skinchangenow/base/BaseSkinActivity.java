@@ -49,6 +49,10 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs)
     {
+        if ("fragment".equals(name))
+        {
+            return super.onCreateView(name, context, attrs);
+        }
         View view = getView(name, context, attrs);
         injectSkin(context, attrs, view);
         return view;
@@ -86,6 +90,10 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs)
     {
+        if ("fragment".equals(name))
+        {
+            return super.onCreateView(name, context, attrs);
+        }
 
         final boolean isPre21 = Build.VERSION.SDK_INT < 21;
 

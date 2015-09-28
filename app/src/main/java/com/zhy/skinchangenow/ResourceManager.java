@@ -11,7 +11,7 @@ public class ResourceManager
     private Resources mResources;
     private String mPluginPackageName;
 
-    public ResourceManager(Resources res,String pluginPackageName)
+    public ResourceManager(Resources res, String pluginPackageName)
     {
         mResources = res;
         mPluginPackageName = pluginPackageName;
@@ -19,12 +19,28 @@ public class ResourceManager
 
     public Drawable getDrawableByName(String name)
     {
-        return mResources.getDrawable(mResources.getIdentifier(name, "drawable", mPluginPackageName));
+        try
+        {
+            return mResources.getDrawable(mResources.getIdentifier(name, "drawable", mPluginPackageName));
+
+        } catch (Resources.NotFoundException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public int getColor(String name)
     {
-        return mResources.getColor(mResources.getIdentifier(name, "color", mPluginPackageName));
+        try
+        {
+            return mResources.getColor(mResources.getIdentifier(name, "color", mPluginPackageName));
+
+        } catch (Resources.NotFoundException e)
+        {
+            e.printStackTrace();
+            return -1;
+        }
 
     }
 

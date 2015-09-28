@@ -10,7 +10,7 @@ public class SkinConfig
     public static final String KEY_PLUGIN_PKG = "key_plugin_pkg";
     public static final String NS_ANDROID="http://schemas.android.com/apk/res/android";
 
-
+    public static final String ATTR_PREFIX="skin";
 
     public static final String ATTR_BACKGROUND="background";
     public static final String ATTR_TEXTCOLOR="textColor";
