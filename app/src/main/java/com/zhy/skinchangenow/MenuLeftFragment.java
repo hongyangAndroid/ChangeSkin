@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.zhy.skinchangenow.callback.ISkinChangingCallback;
-
 import java.io.File;
 
 public class MenuLeftFragment extends Fragment
@@ -34,7 +32,7 @@ public class MenuLeftFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                SkinManager.getInstance().removeAnySkin();
+                com.zhy.changeskin.SkinManager.getInstance().removeAnySkin();
             }
         });
 
@@ -43,7 +41,7 @@ public class MenuLeftFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                SkinManager.getInstance().changeSkin(mSkinPkgPath, "com.zhy.plugin", new ISkinChangingCallback()
+                com.zhy.changeskin.SkinManager.getInstance().changeSkin(mSkinPkgPath, "com.zhy.plugin", new com.zhy.changeskin.callback.ISkinChangingCallback()
                 {
                     @Override
                     public void onStart()

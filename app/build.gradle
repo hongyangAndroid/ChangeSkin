@@ -24,4 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:support-v4:22.2.1'
     compile files('libs/nineoldandroids-2.4.0.jar')
+    compile project(':changeskin')
 }

@@ -15,8 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nineoldandroids.view.ViewHelper;
-import com.zhy.skinchangenow.base.BaseSkinActivity;
-import com.zhy.skinchangenow.callback.ISkinChangingCallback;
 
 import java.io.File;
 
@@ -25,7 +23,7 @@ import java.io.File;
  *
  * @author zhy
  */
-public class MainActivity extends BaseSkinActivity
+public class MainActivity extends com.zhy.changeskin.base.BaseSkinActivity
 {
 
     private DrawerLayout mDrawerLayout;
@@ -133,7 +131,7 @@ public class MainActivity extends BaseSkinActivity
         switch (id)
         {
             case R.id.id_action_plugin_skinchange:
-                SkinManager.getInstance().changeSkin(mSkinPkgPath, "com.zhy.plugin", new ISkinChangingCallback()
+                com.zhy.changeskin.SkinManager.getInstance().changeSkin(mSkinPkgPath, "com.zhy.plugin", new com.zhy.changeskin.callback.ISkinChangingCallback()
                 {
                     @Override
                     public void onStart()
@@ -154,7 +152,7 @@ public class MainActivity extends BaseSkinActivity
                 });
                 break;
             case R.id.id_action_remove_any_skin:
-                SkinManager.getInstance().removeAnySkin();
+                com.zhy.changeskin.SkinManager.getInstance().removeAnySkin();
                 break;
         }
 

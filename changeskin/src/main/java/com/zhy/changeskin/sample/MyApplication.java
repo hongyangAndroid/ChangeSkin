@@ -1,4 +1,4 @@
-package com.zhy.skinchangenow.sample;
+package com.zhy.changeskin.sample;
 
 import android.app.Application;
 

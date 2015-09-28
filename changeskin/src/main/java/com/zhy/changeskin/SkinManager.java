@@ -1,4 +1,4 @@
-package com.zhy.skinchangenow;
+package com.zhy.changeskin;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -6,11 +6,11 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import com.zhy.skinchangenow.attr.SkinView;
-import com.zhy.skinchangenow.callback.ISkinChangedListener;
-import com.zhy.skinchangenow.callback.ISkinChangingCallback;
-import com.zhy.skinchangenow.utils.L;
-import com.zhy.skinchangenow.utils.PrefUtils;
+import com.zhy.changeskin.attr.SkinView;
+import com.zhy.changeskin.callback.ISkinChangedListener;
+import com.zhy.changeskin.callback.ISkinChangingCallback;
+import com.zhy.changeskin.utils.L;
+import com.zhy.changeskin.utils.PrefUtils;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -39,7 +39,6 @@ public class SkinManager
 
     private SkinManager()
     {
-
     }
 
     private static SkinManager sInstance;
@@ -59,11 +58,8 @@ public class SkinManager
 
     public void init(Context context)
     {
-
-
         mContext = context.getApplicationContext();
         mPrefUtils = new PrefUtils(mContext);
-        L.e("mPrefUtils = " + mPrefUtils);
         String skinPluginPath = mPrefUtils.getPluginPath();
         String skinPluginPkg = mPrefUtils.getPluginPkgName();
         if (TextUtils.isEmpty(skinPluginPath))
