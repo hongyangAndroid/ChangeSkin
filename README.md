@@ -1,0 +1,2 @@
+# ChangeSkin
+基于插件式的Android换肤框架，支持app内和或者外部插件式提供资源的换肤方案，无需重启Activity。
