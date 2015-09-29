@@ -1,6 +1,18 @@
 # ChangeSkin
 基于插件式的Android换肤框架，支持app内和或者外部插件式提供资源的换肤方案，无需重启Activity。
 
+# 声明
+感谢：[drakeet](https://github.com/drakeet)的提醒.
+
+恩，看来得说明下，首先对于换肤，从Simple发布的Colorful项目开始关注，搜索了大量的资料，因为希望是可以支持插件式，一直寻找合适的资源替换方案，后来搜索到这篇博文[Android换肤技术总结](http://blog.zhaiyifan.cn/2015/09/10/Android%E6%8D%A2%E8%82%A4%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/)，里面提到了一些方案。很开心的是，发现了这个库：[https://github.com/fengjundev/Android-Skin-Loader](https://github.com/fengjundev/Android-Skin-Loader)有极大的参考价值。该库通过为LayoutInfalter去设置自定义Factory，对加载的View进行分析和提取，方案还是不错的。
+
+该库也就成为本库的一个核心的资源替换的原理。当然，后来对于LayoutInflater.Factory又做了一些的分析，感觉侵入性有点大，主要担心对于AppCompat一些support的影响。于是选择，直接重写Activity的onCreateView等方法。因为本库的预期准备支持app内和或者外部插件式提供资源的换肤方案，为了方便变采用了资源名称的约束，所以修改幅度较大，也就没准备针对Android-Skin-Loader库提交PR。
+
+后面会编写博客叙述该库的原理等。
+
+哈，本身想做好一件事，被提醒的感觉也是蛮不好的，所以我回复的语气也较为不客气，这里致歉~~~ 最后还要感谢[drakeet](https://github.com/drakeet)善意的提醒。
+
+
 
 ## Demo运行
 
