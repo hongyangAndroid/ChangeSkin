@@ -41,18 +41,13 @@ public class SkinManager
     {
     }
 
-    private static SkinManager sInstance;
+    private static class SingletonHolder {
+        static SkinManager sInstance = new SkinManager();
+    }
 
     public static SkinManager getInstance()
     {
-        if (sInstance == null)
-        {
-            synchronized (SkinManager.class)
-            {
-                sInstance = new SkinManager();
-            }
-        }
-        return sInstance;
+        return SingletonHolder.sInstance;
     }
 
 

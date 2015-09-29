@@ -2,6 +2,7 @@ package com.zhy.changeskin.base;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.view.ViewCompat;
@@ -203,9 +204,9 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
 
 
     @Override
-    protected void onResume()
+    protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        super.onResume();
+        super.onCreate(savedInstanceState);
         SkinManager.getInstance().addChangedListener(this);
     }
 
