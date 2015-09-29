@@ -28,7 +28,14 @@ dependencies {
 }
 ```
 
-上传至jcenter后，会提供依赖，目前审核中...
+或者直接添加依赖：
+
+```xml
+dependencies {
+    compile 'com.zhy:changeskin:1.0.0'
+}
+```
+
 
 ### 1、Application中初始化
 在你的Application中，去初始化SkinManager，例如：
