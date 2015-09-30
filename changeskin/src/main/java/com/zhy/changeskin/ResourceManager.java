@@ -1,5 +1,6 @@
 package com.zhy.changeskin;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -56,6 +57,21 @@ public class ResourceManager
         {
             e.printStackTrace();
             return -1;
+        }
+
+    }
+
+    public ColorStateList getColorStateList(String name) {
+        try
+        {
+            name = appendSuffix(name);
+            L.e("name = " + name);
+            return mResources.getColorStateList(mResources.getIdentifier(name, "color", mPluginPackageName));
+
+        } catch (Resources.NotFoundException e)
+        {
+            e.printStackTrace();
+            return null;
         }
 
     }
