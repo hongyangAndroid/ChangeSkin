@@ -138,7 +138,7 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
             SkinManager.getInstance().addSkinView(this, skinViews);
             skinViews.add(new SkinView(view, skinAttrList));
 
-            if (SkinManager.getInstance().hasSkinPlugin())
+            if (SkinManager.getInstance().needChangeSkin())
             {
                 SkinManager.getInstance().apply(this);
             }

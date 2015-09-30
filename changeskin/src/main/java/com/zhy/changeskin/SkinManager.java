@@ -28,17 +28,13 @@ public class SkinManager
     private ResourceManager mResourceManager;
     private PrefUtils mPrefUtils;
 
-    private String mCurPluginPath;
-    private String mCurPluginPkg;
     private boolean usePlugin;
-
-    private boolean mNeedChangeSkin;
-
-
     /**
      * 换肤资源后缀
      */
     private String mSuffix = "";
+    private String mCurPluginPath;
+    private String mCurPluginPkg;
 
 
     private Map<ISkinChangedListener, List<SkinView>> mSkinViewMaps = new HashMap<ISkinChangedListener, List<SkinView>>();
@@ -63,13 +59,10 @@ public class SkinManager
     {
         mContext = context.getApplicationContext();
         mPrefUtils = new PrefUtils(mContext);
+
         String skinPluginPath = mPrefUtils.getPluginPath();
         String skinPluginPkg = mPrefUtils.getPluginPkgName();
         mSuffix = mPrefUtils.getSuffix();
-        if (TextUtils.isEmpty(mSuffix))
-        {
-            mNeedChangeSkin = true;
-        }
         if (TextUtils.isEmpty(skinPluginPath))
             return;
         File file = new File(skinPluginPath);
@@ -89,6 +82,7 @@ public class SkinManager
 
     private void loadPlugin(String skinPath, String skinPkgName, String suffix) throws Exception
     {
+        checkPluginParams(skinPath, skinPkgName);
         AssetManager assetManager = AssetManager.class.newInstance();
         Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
         addAssetPath.invoke(assetManager, skinPath);
@@ -99,27 +93,36 @@ public class SkinManager
         usePlugin = true;
     }
 
+    private boolean checkPluginParams(String skinPath, String skinPkgName)
+    {
+        if (TextUtils.isEmpty(skinPath) || TextUtils.isEmpty(skinPkgName))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private void checkPluginParamsThrow(String skinPath, String skinPkgName)
+    {
+        if (!checkPluginParams(skinPath, skinPkgName))
+        {
+            throw new IllegalArgumentException("skinPluginPath or skinPkgName can not be empty ! ");
+        }
+    }
+
+
     public void removeAnySkin()
     {
         clearPluginInfo();
         notifyChangedListeners();
-
-    }
-
-    private void clearPluginInfo()
-    {
-        mCurPluginPath = null;
-        mCurPluginPkg = null;
-        usePlugin = false;
-        mSuffix = null;
-        mNeedChangeSkin = false;
-        mPrefUtils.clear();
     }
 
 
-    public boolean hasSkinPlugin()
+
+
+    public boolean needChangeSkin()
     {
-        return usePlugin || mNeedChangeSkin;
+        return usePlugin || !TextUtils.isEmpty(mSuffix);
     }
 
 
@@ -140,12 +143,28 @@ public class SkinManager
      */
     public void changeSkin(String suffix)
     {
-        usePlugin = false;
+        clearPluginInfo();//clear before
         mSuffix = suffix;
-        notifyChangedListeners();
-        clearPluginInfo();
         mPrefUtils.putPluginSuffix(suffix);
-        mNeedChangeSkin = true ;
+        notifyChangedListeners();
+    }
+
+    private void clearPluginInfo()
+    {
+        mCurPluginPath = null;
+        mCurPluginPkg = null;
+        usePlugin = false;
+        mSuffix = null;
+        mPrefUtils.clear();
+    }
+
+    private void updatePluginInfo(String skinPluginPath, String pkgName, String suffix)
+    {
+        mPrefUtils.putPluginPath(skinPluginPath);
+        mPrefUtils.putPluginPkg(pkgName);
+        mPrefUtils.putPluginSuffix(suffix);
+        mCurPluginPkg = pkgName;
+        mCurPluginPath = skinPluginPath;
         mSuffix = suffix;
     }
 
@@ -171,11 +190,7 @@ public class SkinManager
         final ISkinChangingCallback skinChangingCallback = callback;
 
         skinChangingCallback.onStart();
-
-        if (TextUtils.isEmpty(skinPluginPath) || TextUtils.isEmpty(pkgName))
-        {
-            throw new IllegalArgumentException("skinPluginPath or pkgName can not be empty ! ");
-        }
+        checkPluginParamsThrow(skinPluginPath, pkgName);
 
         if (skinPluginPath.equals(mCurPluginPath) && pkgName.equals(mCurPluginPkg))
         {
@@ -215,16 +230,6 @@ public class SkinManager
 
             }
         }.execute();
-    }
-
-    private void updatePluginInfo(String skinPluginPath, String pkgName, String suffix)
-    {
-        mPrefUtils.putPluginPath(skinPluginPath);
-        mPrefUtils.putPluginPkg(pkgName);
-        mPrefUtils.putPluginSuffix(suffix);
-        mCurPluginPkg = pkgName;
-        mCurPluginPath = skinPluginPath;
-        mSuffix = suffix;
     }
 
 

@@ -2,6 +2,14 @@
 基于插件式的Android换肤框架，支持app内和或者外部插件式提供资源的换肤方案，无需重启Activity。
 
 
+- [致谢](#致谢)
+- [支持](#支持)
+- [Demo运行](#Demo运行)
+- [使用](#使用)
+- [声明](#声明)
+
+
+
 ## 致谢
 * [Android换肤技术总结](http://blog.zhaiyifan.cn/2015/09/10/Android%E6%8D%A2%E8%82%A4%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/)
 * [github.com/fengjundev/Android-Skin-Loader](https://github.com/fengjundev/Android-Skin-Loader)
@@ -35,9 +43,6 @@
 
 ## 使用
 
->只需要按规则定义下资源名称，然后几行代码就完成了换肤。
-
-
 下载[changeskin](changeskin)，作为module依赖至主项目，例如：
 
 ```xml
@@ -50,12 +55,12 @@ dependencies {
 
 ```xml
 dependencies {
-    compile 'com.zhy:changeskin:1.0.0'
+    compile 'com.zhy:changeskin:2.0.0'
 }
 ```
+### （1）初始化
 
-
-### 1、Application中初始化
+#### 1、Application中初始化
 在你的Application中，去初始化SkinManager，例如：
 
 ```java
@@ -72,10 +77,10 @@ public class MyApplication extends Application
 ```
 别忘了注册。
 
-###2、继承BaseSkinActivity
+####2、继承BaseSkinActivity
 让所有的需要换肤的界面的Activity，继承自`com.zhy.changeskin.base.BaseSkinActivity`。
 
-###3、对于需要换肤的资源命名使用skin开头
+####3、对于需要换肤的资源命名使用skin开头
 
 比如你的某个控件的背景需要换肤：
 
@@ -95,6 +100,13 @@ public class MyApplication extends Application
 ```
 其他的类似。
 
+接下来，针对插件式或者应用内准备皮肤资源即可。
+
+### （2）插件式换肤
+
+#### 1、准备资源apk
+
+>只需要按规则定义下资源名称，然后几行代码就完成了换肤。
 
 然后，单独准备一份插件apk，其实就是普通的项目，仅仅准备需要包含用到的资源即可。
 
@@ -104,7 +116,7 @@ public class MyApplication extends Application
 
 搞成apk就不用说了吧。
 
-###4、换肤API
+#### 2、调用API
 
 准备完成资源后，调用：
 
@@ -143,6 +155,38 @@ SkinManager.getInstance().changeSkin(
 SkinManager.getInstance().removeAnySkin();
 ```
 重置为初始状态。
+
+###（3）应用内换肤
+
+#### 1、准备资源apk
+
+这个就简单了，因为应用内换肤那么你肯定有多套资源，比如有一个背景图叫做：
+
+skin\_main\_bg
+
+那么你可以准备一套皮肤资源，命名为：
+
+skin\_main\_bg\_后缀
+
+这二个后缀你自己决定，例如：
+
+<img src="skin_usage_02.png" width="600px"/>
+
+上图，我准备了两套应用内的皮肤。
+
+#### 2、调用换肤API
+
+```java
+  SkinManager.getInstance().changeSkin("red");
+```
+
+参数传入你的后缀名即可。
+
+详情参考demo.
+
+
+
+
 
 
 ## 声明
