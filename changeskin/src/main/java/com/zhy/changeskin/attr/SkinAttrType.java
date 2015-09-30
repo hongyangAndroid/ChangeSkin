@@ -1,5 +1,6 @@
 package com.zhy.changeskin.attr;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,8 +29,9 @@ public enum SkinAttrType
             @Override
             public void apply(View view, String resName)
             {
-                ((TextView) view).setTextColor(getResourceManager().getColor(resName));
-
+                ColorStateList colorlist = getResourceManager().getColorStateList(resName);
+                if (colorlist == null) return;
+                ((TextView) view).setTextColor(colorlist);
             }
         }, SRC("src")
         {
