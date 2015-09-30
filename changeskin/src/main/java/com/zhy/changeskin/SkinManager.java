@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import com.zhy.changeskin.attr.SkinView;
 import com.zhy.changeskin.callback.ISkinChangedListener;
 import com.zhy.changeskin.callback.ISkinChangingCallback;
-import com.zhy.changeskin.utils.L;
 import com.zhy.changeskin.utils.PrefUtils;
 
 import java.io.File;
@@ -31,7 +30,15 @@ public class SkinManager
 
     private String mCurPluginPath;
     private String mCurPluginPkg;
-    private boolean hasPlugin;
+    private boolean usePlugin;
+
+    private boolean mNeedChangeSkin;
+
+
+    /**
+     * 换肤资源后缀
+     */
+    private String mSuffix = "";
 
 
     private Map<ISkinChangedListener, List<SkinView>> mSkinViewMaps = new HashMap<ISkinChangedListener, List<SkinView>>();
@@ -41,7 +48,8 @@ public class SkinManager
     {
     }
 
-    private static class SingletonHolder {
+    private static class SingletonHolder
+    {
         static SkinManager sInstance = new SkinManager();
     }
 
@@ -57,13 +65,18 @@ public class SkinManager
         mPrefUtils = new PrefUtils(mContext);
         String skinPluginPath = mPrefUtils.getPluginPath();
         String skinPluginPkg = mPrefUtils.getPluginPkgName();
+        mSuffix = mPrefUtils.getSuffix();
+        if (TextUtils.isEmpty(mSuffix))
+        {
+            mNeedChangeSkin = true;
+        }
         if (TextUtils.isEmpty(skinPluginPath))
             return;
         File file = new File(skinPluginPath);
         if (!file.exists()) return;
         try
         {
-            loadPlugin(skinPluginPath, skinPluginPkg);
+            loadPlugin(skinPluginPath, skinPluginPkg, mSuffix);
             mCurPluginPath = skinPluginPath;
             mCurPluginPkg = skinPluginPkg;
         } catch (Exception e)
@@ -74,7 +87,7 @@ public class SkinManager
     }
 
 
-    private void loadPlugin(String skinPath, String skinPkgName) throws Exception
+    private void loadPlugin(String skinPath, String skinPkgName, String suffix) throws Exception
     {
         AssetManager assetManager = AssetManager.class.newInstance();
         Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
@@ -82,8 +95,8 @@ public class SkinManager
 
         Resources superRes = mContext.getResources();
         mResources = new Resources(assetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
-        mResourceManager = new ResourceManager(mResources, skinPkgName);
-        hasPlugin = true;
+        mResourceManager = new ResourceManager(mResources, skinPkgName, suffix);
+        usePlugin = true;
     }
 
     public void removeAnySkin()
@@ -97,31 +110,78 @@ public class SkinManager
     {
         mCurPluginPath = null;
         mCurPluginPkg = null;
-        hasPlugin = false;
+        usePlugin = false;
+        mSuffix = null;
+        mNeedChangeSkin = false;
         mPrefUtils.clear();
     }
 
 
     public boolean hasSkinPlugin()
     {
-        return hasPlugin;
+        return usePlugin || mNeedChangeSkin;
     }
 
 
     public ResourceManager getResourceManager()
     {
-        if (!hasPlugin)
+        if (!usePlugin)
         {
-            mResourceManager = new ResourceManager(mContext.getResources(), mContext.getPackageName());
+            mResourceManager = new ResourceManager(mContext.getResources(), mContext.getPackageName(), mSuffix);
         }
         return mResourceManager;
     }
 
 
-    public void changeSkin(final String skinPluginPath, final String pkgName, final ISkinChangingCallback callback)
+    /**
+     * 应用内换肤，传入资源区别的后缀
+     *
+     * @param suffix
+     */
+    public void changeSkin(String suffix)
     {
+        usePlugin = false;
+        mSuffix = suffix;
+        notifyChangedListeners();
+        clearPluginInfo();
+        mPrefUtils.putPluginSuffix(suffix);
+        mNeedChangeSkin = true ;
+        mSuffix = suffix;
+    }
 
-        callback.onStart();
+
+    public void changeSkin(final String skinPluginPath, final String pkgName, ISkinChangingCallback callback)
+    {
+        changeSkin(skinPluginPath, pkgName, "", callback);
+    }
+
+
+    /**
+     * 根据suffix选择插件内某套皮肤，默认为""
+     *
+     * @param skinPluginPath
+     * @param pkgName
+     * @param suffix
+     * @param callback
+     */
+    public void changeSkin(final String skinPluginPath, final String pkgName, final String suffix, ISkinChangingCallback callback)
+    {
+        if (callback == null)
+            callback = ISkinChangingCallback.DEFAULT_SKIN_CHANGING_CALLBACK;
+        final ISkinChangingCallback skinChangingCallback = callback;
+
+        skinChangingCallback.onStart();
+
+        if (TextUtils.isEmpty(skinPluginPath) || TextUtils.isEmpty(pkgName))
+        {
+            throw new IllegalArgumentException("skinPluginPath or pkgName can not be empty ! ");
+        }
+
+        if (skinPluginPath.equals(mCurPluginPath) && pkgName.equals(mCurPluginPkg))
+        {
+            return;
+        }
+
         new AsyncTask<Void, Void, Void>()
         {
             @Override
@@ -129,11 +189,11 @@ public class SkinManager
             {
                 try
                 {
-                    loadPlugin(skinPluginPath, pkgName);
+                    loadPlugin(skinPluginPath, pkgName, suffix);
                 } catch (Exception e)
                 {
                     e.printStackTrace();
-                    callback.onError(e);
+                    skinChangingCallback.onError(e);
                 }
 
                 return null;
@@ -144,27 +204,27 @@ public class SkinManager
             {
                 try
                 {
-                    updatePluginInfo(skinPluginPath, pkgName);
+                    updatePluginInfo(skinPluginPath, pkgName, suffix);
                     notifyChangedListeners();
-                    callback.onComplete();
+                    skinChangingCallback.onComplete();
                 } catch (Exception e)
                 {
                     e.printStackTrace();
-                    callback.onError(e);
+                    skinChangingCallback.onError(e);
                 }
 
             }
         }.execute();
-
-
     }
 
-    private void updatePluginInfo(String skinPluginPath, String pkgName)
+    private void updatePluginInfo(String skinPluginPath, String pkgName, String suffix)
     {
         mPrefUtils.putPluginPath(skinPluginPath);
         mPrefUtils.putPluginPkg(pkgName);
+        mPrefUtils.putPluginSuffix(suffix);
         mCurPluginPkg = pkgName;
         mCurPluginPath = skinPluginPath;
+        mSuffix = suffix;
     }
 
 

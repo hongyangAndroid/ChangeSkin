@@ -22,16 +22,16 @@ import android.util.AttributeSet;
 import android.view.InflateException;
 import android.view.View;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.zhy.changeskin.SkinManager;
 import com.zhy.changeskin.attr.SkinAttr;
 import com.zhy.changeskin.attr.SkinAttrSupport;
 import com.zhy.changeskin.attr.SkinView;
 import com.zhy.changeskin.callback.ISkinChangedListener;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhy on 15/9/22.
@@ -50,11 +50,13 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs)
     {
+        View view = null;
         if ("fragment".equals(name))
         {
-            return super.onCreateView(name, context, attrs);
+            view = super.onCreateView(name, context, attrs);
         }
-        View view = getView(name, context, attrs);
+        if (view == null)
+            view = getView(name, context, attrs);
         injectSkin(context, attrs, view);
         return view;
     }
@@ -91,9 +93,10 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs)
     {
+        View view = null;
         if ("fragment".equals(name))
         {
-            return super.onCreateView(name, context, attrs);
+            view = super.onCreateView(name, context, attrs);
         }
 
         final boolean isPre21 = Build.VERSION.SDK_INT < 21;
@@ -108,7 +111,7 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
                 && parent.getId() != android.R.id.content
                 && !ViewCompat.isAttachedToWindow(parent);
 
-        View view = mAppCompatViewInflater.createView(parent, name, context, attrs, inheritContext,
+        view = mAppCompatViewInflater.createView(parent, name, context, attrs, inheritContext,
                 isPre21,
                 true);
 

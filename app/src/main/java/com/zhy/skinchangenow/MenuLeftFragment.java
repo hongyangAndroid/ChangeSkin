@@ -8,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.zhy.changeskin.SkinManager;
+
 import java.io.File;
 
-public class MenuLeftFragment extends Fragment
+public class MenuLeftFragment extends Fragment implements View.OnClickListener
 {
     private String mSkinPkgPath = Environment.getExternalStorageDirectory() + File.separator + "night_plugin.apk";
-
+    private View mInnerChange01;
+    private View mInnerChange02;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -26,6 +29,12 @@ public class MenuLeftFragment extends Fragment
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
+        mInnerChange01 = view.findViewById(R.id.id_rl_innerchange01);
+        mInnerChange01.setOnClickListener(this);
+
+        mInnerChange02 = view.findViewById(R.id.id_rl_innerchange02);
+        mInnerChange02.setOnClickListener(this);
 
         view.findViewById(R.id.id_restore).setOnClickListener(new View.OnClickListener()
         {
@@ -62,6 +71,26 @@ public class MenuLeftFragment extends Fragment
                 });
             }
         });
+
+    }
+
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.id_rl_innerchange01:
+                SkinManager.getInstance().changeSkin("red");
+                break;
+            case R.id.id_rl_innerchange02:
+                SkinManager.getInstance().changeSkin("green");
+                break;
+        }
 
     }
 }
