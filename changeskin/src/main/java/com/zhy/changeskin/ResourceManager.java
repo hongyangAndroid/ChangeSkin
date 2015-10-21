@@ -12,6 +12,8 @@ import com.zhy.changeskin.utils.L;
  */
 public class ResourceManager
 {
+    private static final String DEFTYPE_DRAWABLE = "drawable";
+    private static final String DEFTYPE_COLOR = "color";
     private Resources mResources;
     private String mPluginPackageName;
     private String mSuffix;
@@ -32,16 +34,17 @@ public class ResourceManager
 
     public Drawable getDrawableByName(String name)
     {
-        try
-        {
+        try {
             name = appendSuffix(name);
             L.e("name = " + name);
-            return mResources.getDrawable(mResources.getIdentifier(name, "drawable", mPluginPackageName));
-
-        } catch (Resources.NotFoundException e)
-        {
-            e.printStackTrace();
-            return null;
+            return mResources.getDrawable(mResources.getIdentifier(name, DEFTYPE_DRAWABLE, mPluginPackageName));
+        } catch (Resources.NotFoundException e) {
+            try {
+                return mResources.getDrawable(mResources.getIdentifier(name, DEFTYPE_COLOR, mPluginPackageName));
+            } catch (Resources.NotFoundException e2) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -51,7 +54,7 @@ public class ResourceManager
         {
             name = appendSuffix(name);
             L.e("name = " + name);
-            return mResources.getColor(mResources.getIdentifier(name, "color", mPluginPackageName));
+            return mResources.getColor(mResources.getIdentifier(name, DEFTYPE_COLOR, mPluginPackageName));
 
         } catch (Resources.NotFoundException e)
         {
@@ -66,7 +69,7 @@ public class ResourceManager
         {
             name = appendSuffix(name);
             L.e("name = " + name);
-            return mResources.getColorStateList(mResources.getIdentifier(name, "color", mPluginPackageName));
+            return mResources.getColorStateList(mResources.getIdentifier(name, DEFTYPE_COLOR, mPluginPackageName));
 
         } catch (Resources.NotFoundException e)
         {
