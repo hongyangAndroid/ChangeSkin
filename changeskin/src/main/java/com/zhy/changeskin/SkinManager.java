@@ -247,6 +247,9 @@ public class SkinManager
     public void apply(ISkinChangedListener listener)
     {
         List<SkinView> skinViews = getSkinViews(listener);
+
+
+
         if (skinViews == null) return;
         for (SkinView skinView : skinViews)
         {

@@ -3,10 +3,11 @@ package com.zhy.changeskin.attr;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.zhy.changeskin.constant.SkinConfig;
+import com.zhy.changeskin.utils.L;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.zhy.changeskin.constant.SkinConfig;
 
 /**
  * Created by zhy on 15/9/23.
@@ -30,6 +31,7 @@ public class SkinAttrSupport
                 int id = Integer.parseInt(attrValue.substring(1));
                 String entryName = context.getResources().getResourceEntryName(id);
 
+                L.e("entryName = " + entryName);
                 if (entryName.startsWith(SkinConfig.ATTR_PREFIX))
                 {
                     skinAttr = new SkinAttr(attrType, entryName);

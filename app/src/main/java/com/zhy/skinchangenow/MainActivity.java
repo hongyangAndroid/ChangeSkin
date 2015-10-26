@@ -2,6 +2,8 @@ package com.zhy.skinchangenow;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.view.LayoutInflater;
@@ -23,7 +25,7 @@ import java.io.File;
  *
  * @author zhy
  */
-public class MainActivity extends com.zhy.changeskin.base.BaseSkinActivity
+public class MainActivity extends  com.zhy.changeskin.base.BaseSkinActivity
 {
 
     private DrawerLayout mDrawerLayout;
@@ -33,7 +35,7 @@ public class MainActivity extends com.zhy.changeskin.base.BaseSkinActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -114,6 +116,13 @@ public class MainActivity extends com.zhy.changeskin.base.BaseSkinActivity
     private void initView()
     {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.id_drawerLayout);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.id_left_menu_container);
+        if (fragment == null)
+        {
+            fm.beginTransaction().add(R.id.id_left_menu_container, new MenuLeftFragment()).commit();
+        }
     }
 
     @Override

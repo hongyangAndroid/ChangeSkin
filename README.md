@@ -55,7 +55,7 @@ dependencies {
 
 ```xml
 dependencies {
-    compile 'com.zhy:changeskin:2.0.0'
+    compile 'com.zhy:changeskin:3.0.0'
 }
 ```
 ### （1）初始化
@@ -196,11 +196,13 @@ skin\_main\_bg\_后缀
 
 该库也就成为本库的一个资源替换原理的一个核心的突破点。
 
-当然，后来对于LayoutInflater.Factory又做了一些的分析，感觉侵入性有点大，主要担心对于AppCompat一些support的影响。于是选择，直接重写Activity的onCreateView等方法。因为本库的预期准备支持app内和或者外部插件式提供资源的换肤方案，为了方便变采用了资源名称的约束，所以修改幅度较大，也就没准备针对Android-Skin-Loader库提交PR。
+<del>当然，后来对于LayoutInflater.Factory又做了一些的分析，感觉侵入性有点大，主要担心对于AppCompat一些support的影响。
+于是选择，直接重写Activity的onCreateView等方法。</del>(由于v7 23.0.1的变动，onCreateView只能作为private factory参与创建View了，时机太晚，该库方案也改为setFactory)
+因为本库的预期准备支持app内和或者外部插件式提供资源的换肤方案，为了方便变采用了资源名称的约束，所以修改幅度较大，也就没准备针对Android-Skin-Loader库提交PR。
 
 后面会编写博客叙述该库的原理等。
 
-哈，本身想做好一件事，被提醒的感觉也是蛮不好的，所以我回复的语气也较为不客气，这里致歉~~~ 最后还要感谢[drakeet](https://github.com/drakeet)善意的提醒。
+
 
 
 

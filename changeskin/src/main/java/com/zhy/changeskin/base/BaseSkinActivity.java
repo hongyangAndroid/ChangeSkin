@@ -3,10 +3,15 @@ package com.zhy.changeskin.base;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v4.view.LayoutInflaterFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.internal.app.AppCompatViewInflater;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.AppCompatButton;
@@ -20,6 +25,7 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.InflateException;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.zhy.changeskin.SkinManager;
@@ -27,8 +33,11 @@ import com.zhy.changeskin.attr.SkinAttr;
 import com.zhy.changeskin.attr.SkinAttrSupport;
 import com.zhy.changeskin.attr.SkinView;
 import com.zhy.changeskin.callback.ISkinChangedListener;
+import com.zhy.changeskin.utils.L;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,98 +45,82 @@ import java.util.Map;
 /**
  * Created by zhy on 15/9/22.
  */
-public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedListener
+public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedListener, LayoutInflaterFactory
 {
-
     static final Class<?>[] sConstructorSignature = new Class[]{
             Context.class, AttributeSet.class};
     private static final Map<String, Constructor<? extends View>> sConstructorMap
             = new ArrayMap<>();
-    private AppCompatViewInflater mAppCompatViewInflater;
     private final Object[] mConstructorArgs = new Object[2];
-
-    @Nullable
-    @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs)
-    {
-        View view = null;
-        if ("fragment".equals(name))
-        {
-            view = super.onCreateView(name, context, attrs);
-        }
-        if (view == null)
-            view = getView(name, context, attrs);
-        injectSkin(context, attrs, view);
-        return view;
-    }
-
-    private View getView(String name, Context context, AttributeSet attrs)
-    {
-        switch (name)
-        {
-            case "EditText":
-                return new AppCompatEditText(context, attrs);
-            case "Spinner":
-                return new AppCompatSpinner(context, attrs);
-            case "CheckBox":
-                return new AppCompatCheckBox(context, attrs);
-            case "RadioButton":
-                return new AppCompatRadioButton(context, attrs);
-            case "CheckedTextView":
-                return new AppCompatCheckedTextView(context, attrs);
-            case "AutoCompleteTextView":
-                return new AppCompatAutoCompleteTextView(context, attrs);
-            case "MultiAutoCompleteTextView":
-                return new AppCompatMultiAutoCompleteTextView(context, attrs);
-            case "RatingBar":
-                return new AppCompatRatingBar(context, attrs);
-            case "Button":
-                return new AppCompatButton(context, attrs);
-            case "TextView":
-                return new AppCompatTextView(context, attrs);
-        }
-
-        return createViewFromTag(context, name, attrs);
-    }
+    private static Method sCreateViewMethod;
+    static final Class<?>[] sCreateViewSignature = new Class[]{View.class, String.class, Context.class, AttributeSet.class};
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs)
     {
+
+        LayoutInflater layoutInflater = getLayoutInflater();
+        List<SkinAttr> skinAttrList = SkinAttrSupport.getSkinAttrs(attrs, context);
+        if (skinAttrList.isEmpty())
+        {
+            return null;
+        }
+        AppCompatDelegate delegate = getDelegate();
         View view = null;
-        if ("fragment".equals(name))
+        try
         {
-            view = super.onCreateView(name, context, attrs);
+            //public View createView
+            // (View parent, final String name, @NonNull Context context, @NonNull AttributeSet attrs)
+            if (sCreateViewMethod == null)
+            {
+                Method methodOnCreateView = delegate.getClass().getMethod("createView", sCreateViewSignature);
+                sCreateViewMethod = methodOnCreateView;
+            }
+            Object object = sCreateViewMethod.invoke(delegate, parent, name, context, attrs);
+            view = (View) object;
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
         }
 
-        final boolean isPre21 = Build.VERSION.SDK_INT < 21;
-
-        if (mAppCompatViewInflater == null)
-        {
-            mAppCompatViewInflater = new AppCompatViewInflater();
-        }
-
-        boolean subDecorInstalled = true;
-        final boolean inheritContext = isPre21 && subDecorInstalled && parent != null
-                && parent.getId() != android.R.id.content
-                && !ViewCompat.isAttachedToWindow(parent);
-
-        view = mAppCompatViewInflater.createView(parent, name, context, attrs, inheritContext,
-                isPre21,
-                true);
-
+//        if ("fragment".equals(name))
+//        {
+//            view = super.onCreateView(name, context, attrs);
+//        }
+//        final boolean isPre21 = Build.VERSION.SDK_INT < 21;
+//
+//        if (mAppCompatViewInflater == null)
+//        {
+//            mAppCompatViewInflater = new AppCompatViewInflater();
+//        }
+//
+//        boolean subDecorInstalled = true;
+//        final boolean inheritContext = isPre21 && subDecorInstalled && parent != null
+//                && parent.getId() != android.R.id.content
+//                && !ViewCompat.isAttachedToWindow(parent);
+//
+//        view = mAppCompatViewInflater.createView(parent, name, context, attrs, inheritContext,
+//                isPre21,
+//                true);
+//
         if (view == null)
         {
             view = createViewFromTag(context, name, attrs);
         }
-        injectSkin(context, attrs, view);
+        injectSkin(view, skinAttrList);
         return view;
 
     }
 
-    private void injectSkin(Context context, AttributeSet attrs, View view)
+    private void injectSkin(View view, List<SkinAttr> skinAttrList)
     {
         //do some skin inject
-        List<SkinAttr> skinAttrList = SkinAttrSupport.getSkinAttrs(attrs, context);
         if (skinAttrList.size() != 0)
         {
             List<SkinView> skinViews = SkinManager.getInstance().getSkinViews(this);
@@ -206,9 +199,10 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     }
 
 
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        LayoutInflaterCompat.setFactory(layoutInflater, this);
         super.onCreate(savedInstanceState);
         SkinManager.getInstance().addChangedListener(this);
     }
