@@ -1,1 +1,1 @@
-include ':app', ':changeskin', ':imooc_changeskin'
+include ':app', ':changeskin'

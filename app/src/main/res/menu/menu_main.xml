@@ -11,4 +11,10 @@
         android:orderInCategory="100"
         android:title="恢复默认"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/id_action_test_res"
+        android:orderInCategory="100"
+        android:title="测试资源替换"
+        app:showAsAction="never"/>
 </menu>

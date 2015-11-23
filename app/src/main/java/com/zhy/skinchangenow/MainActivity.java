@@ -1,5 +1,7 @@
 package com.zhy.skinchangenow;
 
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -17,15 +19,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nineoldandroids.view.ViewHelper;
+import com.zhy.changeskin.utils.L;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 /**
  * http://blog.csdn.net/lmj623565791/article/details/41531475
  *
  * @author zhy
  */
-public class MainActivity extends  com.zhy.changeskin.base.BaseSkinActivity
+public class MainActivity extends com.zhy.changeskin.base.BaseSkinActivity
 {
 
     private DrawerLayout mDrawerLayout;
@@ -162,6 +166,29 @@ public class MainActivity extends  com.zhy.changeskin.base.BaseSkinActivity
                 break;
             case R.id.id_action_remove_any_skin:
                 com.zhy.changeskin.SkinManager.getInstance().removeAnySkin();
+                break;
+            case R.id.id_action_test_res:
+                AssetManager assetManager = null;
+                try
+                {
+                    assetManager = AssetManager.class.newInstance();
+                    Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
+                    addAssetPath.invoke(assetManager, mSkinPkgPath);
+
+                    File file = new File(mSkinPkgPath);
+                    L.e(file.exists()+"");
+                    Resources superRes = getResources();
+                    Resources mResources = new Resources(assetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
+
+                    int mainBgId = mResources.getIdentifier("skin_main_bg", "drawable", "com.zhy.plugin");
+                    findViewById(R.id.id_drawerLayout).setBackgroundDrawable(mResources.getDrawable(mainBgId));
+
+
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
                 break;
         }
 
