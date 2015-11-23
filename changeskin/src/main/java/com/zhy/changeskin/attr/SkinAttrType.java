@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.zhy.changeskin.ResourceManager;
 import com.zhy.changeskin.SkinManager;
-import com.zhy.changeskin.utils.L;
 
 
 /**
@@ -30,7 +29,6 @@ public enum SkinAttrType
             @Override
             public void apply(View view, String resName)
             {
-                L.e("apply color , " + view + " , " + resName);
                 ColorStateList colorlist = getResourceManager().getColorStateList(resName);
                 if (colorlist == null) return;
                 ((TextView) view).setTextColor(colorlist);

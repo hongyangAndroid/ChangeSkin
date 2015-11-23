@@ -60,11 +60,6 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
     {
 
         LayoutInflater layoutInflater = getLayoutInflater();
-        List<SkinAttr> skinAttrList = SkinAttrSupport.getSkinAttrs(attrs, context);
-        if (skinAttrList.isEmpty())
-        {
-            return null;
-        }
         AppCompatDelegate delegate = getDelegate();
         View view = null;
         try
@@ -109,6 +104,11 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
 //                isPre21,
 //                true);
 //
+        List<SkinAttr> skinAttrList = SkinAttrSupport.getSkinAttrs(attrs, context);
+        if (skinAttrList.isEmpty())
+        {
+            return view;
+        }
         if (view == null)
         {
             view = createViewFromTag(context, name, attrs);

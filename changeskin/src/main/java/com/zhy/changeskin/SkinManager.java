@@ -82,7 +82,7 @@ public class SkinManager
 
     private void loadPlugin(String skinPath, String skinPkgName, String suffix) throws Exception
     {
-        checkPluginParams(skinPath, skinPkgName);
+       //checkPluginParams(skinPath, skinPkgName);
         AssetManager assetManager = AssetManager.class.newInstance();
         Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
         addAssetPath.invoke(assetManager, skinPath);
@@ -247,8 +247,6 @@ public class SkinManager
     public void apply(ISkinChangedListener listener)
     {
         List<SkinView> skinViews = getSkinViews(listener);
-
-
 
         if (skinViews == null) return;
         for (SkinView skinView : skinViews)
